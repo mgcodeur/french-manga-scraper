@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "types": [
+      "node",
+      "jest",
+      "nodemailer"
+    ]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "scripts", "tests"],
+  "moduleSuffixes": [".js", ".ts"],
+  "typeRoots": ["./node_modules/@types"]
+}

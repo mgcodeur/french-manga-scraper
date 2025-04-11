@@ -1,0 +1,12 @@
+# IDE settings
+.idea/
+.vscode/
+
+# Vendor directories
+node_modules
+
+# Hidden files
+.env
+
+# Build directories
+dist
