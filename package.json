@@ -7,7 +7,7 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "test:unit": "jest __tests__/unit",
-    "test:integration": "jest __tests__/integration"
+    "test:real": "jest __tests__/integration"
   },
   "keywords": ["manga", "scraper", "manga downloader"],
   "author": "",
