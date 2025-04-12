@@ -1,4 +1,5 @@
 import axios from 'axios';
+import * as cheerio from 'cheerio';
 
 import { Chapter } from '@/core/models/Chapter';
 import { Manga } from '@/core/models/Manga';
@@ -8,6 +9,18 @@ import { Suggestion } from '@/core/providers/ScanVf/types';
 import { mapSuggestionToManga } from '@/core/providers/ScanVf/mapper';
 import { ScanVfSearchException } from '@/core/exceptions/ScanVfSearchException';
 import { SCANVF_CONFIG } from '@/config/scanVf';
+import {
+  extractAlternativeTitles,
+  extractAuthors,
+  extractCover,
+  extractDescription,
+  extractDrawers,
+  extractGenders,
+  extractRating,
+  extractReleaseDate,
+  extractStatus,
+  extractTitle,
+} from '@/core/providers/ScanVf/helpers';
 
 export class ScanVfProvider implements BaseProvider {
   async search(_query: string): Promise<Manga[]> {
@@ -25,9 +38,34 @@ export class ScanVfProvider implements BaseProvider {
     }
   }
 
-  getManga(_url: string): Promise<Manga> {
-    console.log(_url);
-    return Promise.resolve({} as Manga);
+  async getManga(_url: string): Promise<Manga> {
+    try {
+      const mangaUrl = _url;
+
+      const { data } = await axios.get(mangaUrl);
+
+      const $ = cheerio.load(data);
+
+      return Promise.resolve({
+        title: extractTitle($),
+        alternativeTitles: extractAlternativeTitles($),
+        cover: extractCover($),
+        url: mangaUrl,
+        description: extractDescription($),
+        status: extractStatus($) as 'ongoing' | 'completed' | 'hiatus' | 'cancelled' | 'unknown',
+        source: 'scan-vf',
+        authors: extractAuthors($),
+        releaseDate: extractReleaseDate($),
+        genders: extractGenders($),
+        drawers: extractDrawers($),
+        rating: extractRating($('.rating').text().trim()),
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new ScanVfSearchException(error.message);
+      }
+      throw new ScanVfSearchException('An unknown error occurred');
+    }
   }
 
   getChapters(_url: string): Promise<Chapter[]> {

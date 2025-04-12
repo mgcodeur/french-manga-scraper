@@ -5,9 +5,9 @@ export interface Manga {
   alternativeTitles?: string[];
   url: string;
   cover: string;
-  description?: string;
-  author?: string;
-  drawer?: string;
+  description: string;
+  authors?: string[];
+  drawers?: string[];
   status: 'ongoing' | 'completed' | 'hiatus' | 'cancelled' | 'unknown';
   genders?: string[];
   source: 'scan-vf';
