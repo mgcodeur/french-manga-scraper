@@ -83,8 +83,27 @@ export class ScanVfProvider implements BaseProvider {
     }
   }
 
-  getPages(_chapterUrl: string): Promise<Page[]> {
-    console.log(_chapterUrl);
-    return Promise.resolve([]);
+  async getPages(_chapterUrl: string): Promise<Page[]> {
+    try {
+      const { data } = await axios.get(_chapterUrl.trim());
+
+      const $ = cheerio.load(data);
+
+      return (
+        $('#all img')
+          .map((index, el) => {
+            return {
+              number: index + 1,
+              image: $(el).attr('data-src')?.trim() || '',
+            };
+          })
+          .toArray() || []
+      );
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new ScanVfSearchException(error.message);
+      }
+      throw new ScanVfSearchException('An unknown error occurred');
+    }
   }
 }

@@ -1,13 +1,10 @@
-import { ScanVfProvider } from '@/core/providers/ScanVf/index';
+import { SCANVF_CONFIG } from './config/scanVf';
+import { ScanVfProvider } from './core/providers/ScanVf';
 
 async function main(): Promise<void> {
-  const manga = await new ScanVfProvider().search('My Hero Academia');
+  const pages = await new ScanVfProvider().getManga(`https://www.scan-vf.net/my-hero-academia/`);
 
-  const onePiece = manga.find((m) => m.title.toLowerCase().includes('my hero'));
-
-  const detail = await new ScanVfProvider().getChapters(onePiece!.url);
-
-  console.log('detail', JSON.stringify(detail, null, 2));
+  console.log(pages);
 }
 
 main();

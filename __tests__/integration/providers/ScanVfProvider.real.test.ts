@@ -53,4 +53,26 @@ describe('ScanVfProvider [REAL HTTP]', () => {
 
     expect(first.uploadDate).toBeInstanceOf(Date);
   });
+
+  it('should fetch and parse real pages from a ScanVF chapter', async () => {
+    const results = await provider.search('one piece');
+    const onePiece = results.find((m: Manga) => m.title.toLowerCase().includes('one piece'));
+
+    expect(onePiece).toBeDefined();
+
+    const chapters = await provider.getChapters(onePiece!.url);
+    expect(chapters.length).toBeGreaterThan(0);
+
+    const firstChapter = chapters[0];
+
+    const fullChapterUrl = firstChapter.url.trim();
+    const pages = await provider.getPages(fullChapterUrl);
+
+    expect(Array.isArray(pages)).toBe(true);
+    expect(pages.length).toBeGreaterThan(0);
+
+    const firstPage = pages[0];
+    expect(firstPage.number).toBe(1);
+    expect(firstPage.image.trim()).toMatch(/^https?:\/\//);
+  });
 });

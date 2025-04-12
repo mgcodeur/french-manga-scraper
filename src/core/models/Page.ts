@@ -1,5 +1,5 @@
 export interface Page {
-  url: string;
+  url?: string;
   number: number;
   image: string;
 }

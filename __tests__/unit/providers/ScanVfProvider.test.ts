@@ -121,4 +121,48 @@ describe('ScanVfProvider', () => {
     expect(chapters[1].number).toBe(2);
     expect(chapters[1].url).toBe('/one_piece/2');
   });
+
+  it('should return parsed pages from chapter HTML', async () => {
+    const fakeChapterHtml = `
+      <html>
+        <body>
+          <div id="all">
+            <img data-src="https://cdn.scan-vf.net/imgs/page1.jpg" />
+            <img data-src="https://cdn.scan-vf.net/imgs/page2.jpg" />
+            <img data-src="https://cdn.scan-vf.net/imgs/page3.jpg" />
+          </div>
+        </body>
+      </html>
+    `;
+
+    mockedAxios.get.mockResolvedValueOnce({ data: fakeChapterHtml });
+
+    const pages = await provider.getPages('https://www.scan-vf.net/one_piece/chapitre-1');
+
+    expect(Array.isArray(pages)).toBe(true);
+    expect(pages).toHaveLength(3);
+
+    expect(pages[0]).toEqual({
+      number: 1,
+      image: 'https://cdn.scan-vf.net/imgs/page1.jpg',
+    });
+
+    expect(pages[1]).toEqual({
+      number: 2,
+      image: 'https://cdn.scan-vf.net/imgs/page2.jpg',
+    });
+
+    expect(pages[2]).toEqual({
+      number: 3,
+      image: 'https://cdn.scan-vf.net/imgs/page3.jpg',
+    });
+  });
+
+  it('should throw ScanVfSearchException if getPages fails', async () => {
+    mockedAxios.get.mockRejectedValueOnce(new Error('Page not found'));
+
+    await expect(provider.getPages('/one_piece/chapitre-404')).rejects.toThrow(
+      ScanVfSearchException
+    );
+  });
 });
