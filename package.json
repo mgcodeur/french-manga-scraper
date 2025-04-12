@@ -9,7 +9,11 @@
     "test:unit": "jest __tests__/unit",
     "test:real": "jest __tests__/integration"
   },
-  "keywords": ["manga", "scraper", "manga downloader"],
+  "keywords": [
+    "manga",
+    "scraper",
+    "manga downloader"
+  ],
   "author": "",
   "license": "ISC",
   "description": "",

@@ -1,4 +1,4 @@
-import { ScanVfProvider } from './core/providers/ScanVf/index';
+import { ScanVfProvider } from '@/core/providers/ScanVf/index';
 
 async function main(): Promise<void> {
   const mangas = await new ScanVfProvider().search("one");

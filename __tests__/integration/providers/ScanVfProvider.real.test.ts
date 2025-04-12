@@ -1,4 +1,4 @@
-import { ScanVfProvider } from '../../../src/core/providers/ScanVf/index';
+import { ScanVfProvider } from '@/core/providers/ScanVf/index';
 
 describe("ScanVfProvider [REAL HTTP]", () => {
   const provider = new ScanVfProvider();

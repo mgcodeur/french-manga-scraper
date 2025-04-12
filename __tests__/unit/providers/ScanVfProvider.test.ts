@@ -1,6 +1,6 @@
 import axios from "axios";
-import { ScanVfProvider } from '../../../src/core/providers/ScanVf/index';
-import { ScanVfSearchException } from '../../../src/core/exceptions/ScanVfSearchException';
+import { ScanVfProvider } from '@/core/providers/ScanVf/index';
+import { ScanVfSearchException } from '@/core/exceptions/ScanVfSearchException';
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;

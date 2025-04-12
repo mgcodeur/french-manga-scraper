@@ -1,5 +1,5 @@
-import { Manga } from '../../models/Manga';
-import { Suggestion } from './types';
+import { Manga } from '@/core/models/Manga';
+import { Suggestion } from '@/core/providers/ScanVf/types';
 
 export function mapSuggestionToManga(s: Suggestion): Manga {
     return {

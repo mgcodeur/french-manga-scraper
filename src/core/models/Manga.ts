@@ -1,4 +1,4 @@
-import { Chapter } from './Chapter';
+import { Chapter } from '@/core/models/Chapter';
 
 export interface Manga {
   title: string;

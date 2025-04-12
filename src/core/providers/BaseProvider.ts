@@ -1,6 +1,6 @@
-import { Chapter } from '../models/Chapter';
-import { Manga } from '../models/Manga';
-import { Page } from '../models/Page';
+import { Chapter } from '@/core/models/Chapter';
+import { Manga } from '@/core/models/Manga';
+import { Page } from '@/core/models/Page';
 
 
 export interface BaseProvider {

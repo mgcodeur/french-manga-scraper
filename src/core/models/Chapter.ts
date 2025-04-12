@@ -1,4 +1,4 @@
-import { Page } from './Page';
+import { Page } from '@/core/models/Page';
 
 export interface Chapter {
     title: string;
