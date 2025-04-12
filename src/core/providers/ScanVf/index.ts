@@ -1,14 +1,11 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
+import { SCANVF_CONFIG } from '@/config/scanVf';
+import { ScanVfSearchException } from '@/core/exceptions/ScanVfSearchException';
 import { Chapter } from '@/core/models/Chapter';
 import { Manga } from '@/core/models/Manga';
 import { Page } from '@/core/models/Page';
-import { BaseProvider } from '@/core/providers/BaseProvider';
-import { Suggestion } from '@/core/providers/ScanVf/types';
-import { mapSuggestionToManga } from '@/core/providers/ScanVf/mapper';
-import { ScanVfSearchException } from '@/core/exceptions/ScanVfSearchException';
-import { SCANVF_CONFIG } from '@/config/scanVf';
 import {
   extractAlternativeTitles,
   extractAuthors,
@@ -20,7 +17,12 @@ import {
   extractReleaseDate,
   extractStatus,
   extractTitle,
+  extractChapters,
 } from '@/core/providers/ScanVf/helpers';
+
+import { BaseProvider } from '@/core/providers/BaseProvider';
+import { mapSuggestionToManga } from '@/core/providers/ScanVf/mapper';
+import { Suggestion } from '@/core/providers/ScanVf/types';
 
 export class ScanVfProvider implements BaseProvider {
   async search(_query: string): Promise<Manga[]> {
@@ -59,6 +61,7 @@ export class ScanVfProvider implements BaseProvider {
         genders: extractGenders($),
         drawers: extractDrawers($),
         rating: extractRating($('.rating').text().trim()),
+        chapters: extractChapters($),
       });
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -68,9 +71,16 @@ export class ScanVfProvider implements BaseProvider {
     }
   }
 
-  getChapters(_url: string): Promise<Chapter[]> {
-    console.log(_url);
-    return Promise.resolve([]);
+  async getChapters(_url: string): Promise<Chapter[]> {
+    try {
+      const manga = await this.getManga(_url);
+      return manga.chapters ?? [];
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new ScanVfSearchException(error.message);
+      }
+      throw new ScanVfSearchException('An unknown error occurred');
+    }
   }
 
   getPages(_chapterUrl: string): Promise<Page[]> {

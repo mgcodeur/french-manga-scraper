@@ -70,3 +70,26 @@ export const extractDrawers = ($: cheerio.CheerioAPI): string[] => {
     .split(',')
     .filter((drawer) => drawer);
 };
+
+export const extractChapters = ($: cheerio.CheerioAPI) => {
+  return $('.chapters li')
+    .map((_, el) => {
+      const chapterUrl = $(el).find('a').attr('href');
+      const chapterTitle = $(el).find('em').text().trim();
+      const chapterNumber = parseInt($(el).find('a').text().trim().split(' ').pop() || '0', 10);
+      const uploadDate = $(el).find('.date-chapter-title-rtl').text().trim();
+
+      return {
+        title: chapterTitle || '',
+        url: chapterUrl || '',
+        number: chapterNumber,
+        uploadDate: convertChapterDateToDate(uploadDate),
+      };
+    })
+    .toArray()
+    .reverse();
+};
+
+export const convertChapterDateToDate = (dateString: string): Date => {
+  return new Date(dateString.replace(/(\d{2}) (\w+)\.? (\d{4})/, '$1 $2 $3'));
+};
