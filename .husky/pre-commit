@@ -1,0 +1,5 @@
+echo "🚨 Running tests..."
+npm run test:unit
+
+echo "🧹 Running lint before commit..."
+npm run lint:fix

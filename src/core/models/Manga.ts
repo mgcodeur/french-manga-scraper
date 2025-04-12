@@ -8,9 +8,9 @@ export interface Manga {
   description?: string;
   author?: string;
   drawer?: string;
-  status: "ongoing" | "completed" | "hiatus" | "cancelled" | "unknown";
+  status: 'ongoing' | 'completed' | 'hiatus' | 'cancelled' | 'unknown';
   genders?: string[];
-  source: "scan-vf";
+  source: 'scan-vf';
   rating?: number;
   demographic?: string;
   type?: string;

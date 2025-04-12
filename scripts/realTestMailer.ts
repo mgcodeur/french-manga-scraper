@@ -1,21 +1,14 @@
-import nodemailer from "nodemailer";
+import nodemailer from 'nodemailer';
 
-import * as dotenv from "dotenv";
+import * as dotenv from 'dotenv';
 dotenv.config();
 
-const {
-  MAIL_HOST,
-  MAIL_PORT,
-  MAIL_USER,
-  MAIL_PASS,
-  MAIL_TO,
-  MAIL_FROM
-} = process.env;
+const { MAIL_HOST, MAIL_PORT, MAIL_USER, MAIL_PASS, MAIL_TO, MAIL_FROM } = process.env;
 
 async function sendMail() {
   const transporter = nodemailer.createTransport({
     host: MAIL_HOST,
-    port: parseInt(MAIL_PORT || "587"),
+    port: parseInt(MAIL_PORT || '587'),
     secure: false,
     auth: {
       user: MAIL_USER,
@@ -30,7 +23,7 @@ async function sendMail() {
     text: "Les tests d'intégration (réels) ont échoué. Vérifie que le site ScanVF n'a pas changé.",
   });
 
-  console.log("📨 Mail envoyé avec succès !");
+  console.log('📨 Mail envoyé avec succès !');
 }
 
 sendMail().catch((err) => {

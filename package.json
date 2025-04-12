@@ -6,8 +6,13 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
+    "test": "jest",
     "test:unit": "jest __tests__/unit",
-    "test:real": "jest __tests__/integration"
+    "test:real": "jest __tests__/integration",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "prepare": "husky"
   },
   "keywords": [
     "manga",
@@ -28,14 +33,23 @@
   "devDependencies": {
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
+    "@eslint/js": "^9.24.0",
     "@types/cheerio": "^0.22.35",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.14.0",
     "@types/nodemailer": "^6.4.17",
+    "@typescript-eslint/eslint-plugin": "^8.29.1",
+    "@typescript-eslint/parser": "^8.29.1",
+    "eslint": "^9.24.0",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-plugin-prettier": "^5.2.6",
+    "globals": "^16.0.0",
     "husky": "^9.1.7",
     "jest": "^29.7.0",
+    "prettier": "^3.5.3",
     "ts-jest": "^29.3.1",
     "tsx": "^4.19.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.29.1"
   }
 }

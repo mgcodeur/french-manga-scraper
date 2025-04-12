@@ -1,4 +1,4 @@
 export interface Suggestion {
-    value: string;
-    data: string;
+  value: string;
+  data: string;
 }
