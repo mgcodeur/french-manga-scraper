@@ -1,0 +1,23 @@
+name: Deploy To mz-api Subdomain
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Connect to PaneraMg Server and Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_PANERA_HOST }}
+          username: ${{ secrets.SSH_PANERA_USERNAME }}
+          password: ${{ secrets.SSH_PANERA_PASSWORD }}
+          script: 'cd /home/paneramg/domains/mz-api.panera.mg/public_html && ./scripts/deploy_main.sh'
