@@ -2,9 +2,11 @@
   "name": "french-manga-scraper",
   "version": "1.0.0",
   "main": "src/index.ts",
+  "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
+    "dev:cli": "tsx watch src/interface/cli/index.ts",
+    "build": "vite build",
     "start": "node dist/index.js",
     "test": "jest",
     "test:unit": "jest __tests__/unit",
@@ -26,9 +28,12 @@
     "axios": "^1.8.4",
     "chalk": "^5.4.1",
     "cheerio": "^1.0.0",
+    "commander": "^13.1.0",
     "dotenv": "^16.5.0",
+    "inquirer": "^12.5.2",
     "nodemailer": "^6.10.0",
-    "ora": "^8.2.0"
+    "ora": "^8.2.0",
+    "tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.0",
@@ -50,6 +55,8 @@
     "ts-jest": "^29.3.1",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.29.1"
+    "typescript-eslint": "^8.29.1",
+    "vite": "^6.2.6",
+    "vite-tsconfig-paths": "^5.1.4"
   }
 }

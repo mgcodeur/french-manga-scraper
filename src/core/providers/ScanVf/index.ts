@@ -24,6 +24,11 @@ import { BaseProvider } from '@/core/providers/BaseProvider';
 import { mapSuggestionToManga } from '@/core/providers/ScanVf/mapper';
 import { Suggestion } from '@/core/providers/ScanVf/types';
 
+import fs from 'fs';
+import path from 'path';
+import { SCRAPPER_CONFIG } from '@/config/scrapper';
+import { slugify } from '@/core/utils/string';
+
 export class ScanVfProvider implements BaseProvider {
   async search(_query: string): Promise<Manga[]> {
     const searchUrl: string = `${SCANVF_CONFIG.baseUrl}/search?query=${_query}`;
@@ -105,5 +110,63 @@ export class ScanVfProvider implements BaseProvider {
       }
       throw new ScanVfSearchException('An unknown error occurred');
     }
+  }
+
+  async getMangaWithChaptersAndPages(
+    manga: Manga,
+    numberOfChapters: number = 10,
+    fromChapter: number = 1
+  ): Promise<Manga> {
+    const chapters = manga.chapters;
+
+    if (!chapters) {
+      throw new ScanVfSearchException('No chapters found');
+    }
+
+    manga.chapters = chapters
+      ?.filter((chapter: Chapter) => chapter.number >= fromChapter)
+      .slice(0, numberOfChapters);
+
+    for (const chapter of manga.chapters) {
+      const pages = await this.getPages(chapter.url);
+      chapter.pages = pages;
+    }
+
+    return manga;
+  }
+
+  async saveManga(manga: Manga): Promise<Manga> {
+    const mangaDir = path.join(SCRAPPER_CONFIG.dataDir, slugify(manga.title));
+
+    if (!fs.existsSync(mangaDir)) {
+      fs.mkdirSync(mangaDir, { recursive: true });
+    }
+
+    const mangaFilePath = path.join(mangaDir, 'manga.json');
+
+    let savedManga: Manga | null = null;
+
+    if (fs.existsSync(mangaFilePath)) {
+      const savedData = fs.readFileSync(mangaFilePath, 'utf-8');
+      savedManga = JSON.parse(savedData) as Manga;
+
+      const existingChapters = savedManga.chapters || [];
+      const newChapters = manga.chapters || [];
+
+      const mergedChapters = [
+        ...existingChapters,
+        ...newChapters.filter(
+          (newChapter) => !existingChapters.some((existing) => existing.url === newChapter.url)
+        ),
+      ];
+
+      savedManga.chapters = mergedChapters;
+    } else {
+      savedManga = manga;
+    }
+
+    fs.writeFileSync(mangaFilePath, JSON.stringify(savedManga, null, 2));
+
+    return savedManga;
   }
 }

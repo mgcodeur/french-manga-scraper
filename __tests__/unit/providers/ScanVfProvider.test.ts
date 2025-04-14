@@ -1,13 +1,28 @@
 import axios from 'axios';
+import fs from 'fs';
 import { ScanVfProvider } from '@/core/providers/ScanVf/index';
 import { ScanVfSearchException } from '@/core/exceptions/ScanVfSearchException';
 import { SCANVF_CONFIG } from '@/config/scanVf';
 
 jest.mock('axios');
+jest.mock('@/config/scrapper', () => ({
+  SCRAPPER_CONFIG: {
+    dataDir: './mock-data',
+  },
+}));
+jest.mock('fs');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedFs = fs as jest.Mocked<typeof fs>;
 
 describe('ScanVfProvider', () => {
   const provider = new ScanVfProvider();
+
+  beforeEach(() => {
+    mockedFs.existsSync.mockReset();
+    mockedFs.mkdirSync.mockReset();
+    mockedFs.readFileSync.mockReset();
+    mockedFs.writeFileSync.mockReset();
+  });
 
   it('should search for manga', async () => {
     mockedAxios.get.mockResolvedValue({
@@ -163,6 +178,98 @@ describe('ScanVfProvider', () => {
 
     await expect(provider.getPages('/one_piece/chapitre-404')).rejects.toThrow(
       ScanVfSearchException
+    );
+  });
+
+  it('should return manga with limited chapters and their pages', async () => {
+    const mockManga = {
+      title: 'One Piece',
+      alternativeTitles: [],
+      cover: '',
+      url: 'https://www.scan-vf.net/one_piece',
+      description: '',
+      status: 'ongoing',
+      source: 'scan-vf',
+      authors: [],
+      releaseDate: '',
+      genders: [],
+      drawers: [],
+      rating: 4.5,
+      chapters: [
+        { number: 1, title: 'Chapter 1', url: '/one_piece/1', uploadDate: new Date() },
+        { number: 2, title: 'Chapter 2', url: '/one_piece/2', uploadDate: new Date() },
+        { number: 3, title: 'Chapter 3', url: '/one_piece/3', uploadDate: new Date() },
+      ],
+    };
+
+    const mockedPages = [
+      { number: 1, image: 'page1.jpg' },
+      { number: 2, image: 'page2.jpg' },
+    ];
+    jest.spyOn(provider, 'getPages').mockResolvedValue(mockedPages);
+
+    const result = await provider.getMangaWithChaptersAndPages(mockManga as any, 2, 2);
+
+    expect(result.chapters).toHaveLength(2);
+    expect(result.chapters![0].number).toBe(2);
+    expect(result.chapters![1].number).toBe(3);
+
+    result.chapters!.forEach((chapter) => {
+      expect(chapter.pages).toEqual(mockedPages);
+    });
+  });
+
+  it('should create directory and save new manga if not exists', async () => {
+    const mockManga = {
+      title: 'Bleach',
+      chapters: [{ number: 1, url: 'url-1' }],
+    } as any;
+
+    mockedFs.existsSync.mockReturnValue(false);
+
+    const result = await provider.saveManga(mockManga);
+
+    expect(mockedFs.mkdirSync).toHaveBeenCalledWith(expect.any(String), { recursive: true });
+    expect(mockedFs.writeFileSync).toHaveBeenCalledWith(
+      expect.any(String),
+      JSON.stringify(mockManga, null, 2)
+    );
+    expect(result).toEqual(mockManga);
+  });
+
+  it('should merge new chapters with existing and save', async () => {
+    const existingManga = {
+      title: 'Bleach',
+      chapters: [{ number: 1, url: 'url-1' }],
+    };
+
+    const newManga = {
+      title: 'Bleach',
+      chapters: [{ number: 2, url: 'url-2' }],
+    };
+
+    mockedFs.existsSync.mockImplementation((path) => {
+      return path.toString().endsWith('manga.json') || true;
+    });
+
+    mockedFs.readFileSync.mockReturnValue(JSON.stringify(existingManga));
+
+    const result = await provider.saveManga(newManga as any);
+
+    expect(result.chapters).toHaveLength(2);
+    expect(mockedFs.writeFileSync).toHaveBeenCalledWith(
+      expect.any(String),
+      JSON.stringify(
+        {
+          title: 'Bleach',
+          chapters: [
+            { number: 1, url: 'url-1' },
+            { number: 2, url: 'url-2' },
+          ],
+        },
+        null,
+        2
+      )
     );
   });
 });

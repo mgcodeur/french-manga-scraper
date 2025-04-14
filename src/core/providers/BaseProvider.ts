@@ -7,4 +7,10 @@ export interface BaseProvider {
   getManga(_url: string): Promise<Manga>;
   getChapters(_url: string): Promise<Chapter[]>;
   getPages(_chapterUrl: string): Promise<Page[]>;
+  getMangaWithChaptersAndPages(
+    manga: Manga,
+    numberOfChapters?: number,
+    fromChapter?: number
+  ): Promise<Manga>;
+  saveManga(manga: Manga): Promise<Manga>;
 }

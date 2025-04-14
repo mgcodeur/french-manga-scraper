@@ -1,6 +1,16 @@
 import { ScanVfProvider } from '@/core/providers/ScanVf/index';
 import { Manga } from '@/core/models/Manga';
 
+jest.mock('@/config/scrapper', () => ({
+  SCRAPPER_CONFIG: {
+    dataDir: './mock-data',
+  },
+}));
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 describe('ScanVfProvider [REAL HTTP]', () => {
   const provider = new ScanVfProvider();
 
@@ -74,5 +84,30 @@ describe('ScanVfProvider [REAL HTTP]', () => {
     const firstPage = pages[0];
     expect(firstPage.number).toBe(1);
     expect(firstPage.image.trim()).toMatch(/^https?:\/\//);
+  });
+
+  it('should fetch manga with selected chapters and their pages [REAL HTTP]', async () => {
+    const provider = new ScanVfProvider();
+
+    const results = await provider.search('one piece');
+    const onePiece = results.find((m: Manga) => m.title.toLowerCase().includes('one piece'));
+
+    expect(onePiece).toBeDefined();
+
+    const manga = await provider.getManga(onePiece!.url);
+
+    const enriched = await provider.getMangaWithChaptersAndPages(manga, 2, 1);
+
+    expect(enriched.chapters).toBeDefined();
+    expect(enriched.chapters!.length).toBeLessThanOrEqual(2);
+
+    enriched.chapters!.forEach((chapter) => {
+      expect(Array.isArray(chapter.pages)).toBe(true);
+      expect(chapter.pages!.length).toBeGreaterThan(0);
+
+      const firstPage = chapter.pages![0];
+      expect(firstPage.number).toBe(1);
+      expect(firstPage.image).toMatch(/^https?:\/\//);
+    });
   });
 });
