@@ -14,6 +14,7 @@ program
   .argument('<url>', 'manga URL')
   .argument('[numberOfChapters]', 'number of chapters to save', '5')
   .argument('[fromChapter]', 'starting chapter number', '1')
+  .argument('[webhook]', 'webhook URL to send the data to', '')
   .action(runSave);
 
 program.parse(process.argv);

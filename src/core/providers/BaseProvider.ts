@@ -8,9 +8,10 @@ export interface BaseProvider {
   getChapters(_url: string): Promise<Chapter[]>;
   getPages(_chapterUrl: string): Promise<Page[]>;
   getMangaWithChaptersAndPages(
-    manga: Manga,
-    numberOfChapters?: number,
-    fromChapter?: number
+    _manga: Manga,
+    _numberOfChapters?: number,
+    _fromChapter?: number
   ): Promise<Manga>;
-  saveManga(manga: Manga): Promise<Manga>;
+  saveManga(_manga: Manga): Promise<Manga>;
+  sendWebhook(_webhookUrl: string, _manga: Manga): Promise<void>;
 }

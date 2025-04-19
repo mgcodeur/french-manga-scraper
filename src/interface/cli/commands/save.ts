@@ -6,7 +6,8 @@ export async function runSave(
   providerName: string,
   url: string,
   numberOfChapters: number = 5,
-  fromChapter: number = 1
+  fromChapter: number = 1,
+  webhook: string = ''
 ): Promise<void> {
   const provider = getProvider(providerName);
 
@@ -29,4 +30,15 @@ export async function runSave(
   }
 
   await provider.saveManga(data);
+
+  console.log(chalk.green(`✅ Manga "${data.title}" saved successfully!`));
+
+  if (webhook) {
+    try {
+      await provider.sendWebhook(webhook, data);
+      console.log(chalk.green(`✅ Webhook sent to "${webhook}" successfully!`));
+    } catch (error: any) {
+      console.error(chalk.red(`❌ Failed to send webhook: ${error}`));
+    }
+  }
 }

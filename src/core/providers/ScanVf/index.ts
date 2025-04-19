@@ -113,30 +113,30 @@ export class ScanVfProvider implements BaseProvider {
   }
 
   async getMangaWithChaptersAndPages(
-    manga: Manga,
-    numberOfChapters: number = 10,
-    fromChapter: number = 1
+    _manga: Manga,
+    _numberOfChapters: number = 10,
+    _fromChapter: number = 1
   ): Promise<Manga> {
-    const chapters = manga.chapters;
+    const chapters = _manga.chapters;
 
     if (!chapters) {
       throw new ScanVfSearchException('No chapters found');
     }
 
-    manga.chapters = chapters
-      ?.filter((chapter: Chapter) => chapter.number >= fromChapter)
-      .slice(0, numberOfChapters);
+    _manga.chapters = chapters
+      ?.filter((chapter: Chapter) => chapter.number >= _fromChapter)
+      .slice(0, _numberOfChapters);
 
-    for (const chapter of manga.chapters) {
+    for (const chapter of _manga.chapters) {
       const pages = await this.getPages(chapter.url);
       chapter.pages = pages;
     }
 
-    return manga;
+    return _manga;
   }
 
-  async saveManga(manga: Manga): Promise<Manga> {
-    const mangaDir = path.join(SCRAPPER_CONFIG.dataDir, slugify(manga.title));
+  async saveManga(_manga: Manga): Promise<Manga> {
+    const mangaDir = path.join(SCRAPPER_CONFIG.dataDir, slugify(_manga.title));
 
     if (!fs.existsSync(mangaDir)) {
       fs.mkdirSync(mangaDir, { recursive: true });
@@ -151,7 +151,7 @@ export class ScanVfProvider implements BaseProvider {
       savedManga = JSON.parse(savedData) as Manga;
 
       const existingChapters = savedManga.chapters || [];
-      const newChapters = manga.chapters || [];
+      const newChapters = _manga.chapters || [];
 
       const mergedChapters = [
         ...existingChapters,
@@ -162,11 +162,25 @@ export class ScanVfProvider implements BaseProvider {
 
       savedManga.chapters = mergedChapters;
     } else {
-      savedManga = manga;
+      savedManga = _manga;
     }
 
     fs.writeFileSync(mangaFilePath, JSON.stringify(savedManga, null, 2));
 
     return savedManga;
+  }
+
+  async sendWebhook(_webhookUrl: string, _data: Manga): Promise<void> {
+    try {
+      console.log(`Sending webhook to ${_webhookUrl}...`);
+      await axios.post(_webhookUrl, _data, {
+        withCredentials: false,
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new ScanVfSearchException(error?.message);
+      }
+      throw new ScanVfSearchException('An unknown error occurred');
+    }
   }
 }

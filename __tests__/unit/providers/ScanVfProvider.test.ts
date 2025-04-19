@@ -81,7 +81,7 @@ describe('ScanVfProvider', () => {
       releaseDate: '1997',
       genders: ['Action', 'Aventure'],
       drawers: ['Oda'],
-      rating: 4.5,
+      rating: 9,
     });
   });
 
@@ -194,7 +194,7 @@ describe('ScanVfProvider', () => {
       releaseDate: '',
       genders: [],
       drawers: [],
-      rating: 4.5,
+      rating: 9,
       chapters: [
         { number: 1, title: 'Chapter 1', url: '/one_piece/1', uploadDate: new Date() },
         { number: 2, title: 'Chapter 2', url: '/one_piece/2', uploadDate: new Date() },

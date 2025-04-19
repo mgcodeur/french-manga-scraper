@@ -4,7 +4,7 @@ import cheerio from 'cheerio';
 export const extractRating = (text: string): number => {
   const match = text.match(/([\d.]+)(?:\/5)?/);
   const ratingValue = match ? parseFloat(match[1]) : NaN;
-  return isNaN(ratingValue) ? 0 : ratingValue;
+  return isNaN(ratingValue) ? 0 : ratingValue * 2;
 };
 
 export const extractTitle = ($: cheerio.CheerioAPI): string => {
